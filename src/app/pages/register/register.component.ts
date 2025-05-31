@@ -3,16 +3,12 @@ import {RouterLink} from "@angular/router";
 import {FooterComponent} from "../../shared/footer/footer.component";
 
 @Component({
-  selector: 'app-login',
+  selector: 'app-register',
   standalone: true,
-  imports: [
-    RouterLink,
-    FooterComponent
-  ],
-  templateUrl: './login.component.html',
-  styleUrl: './login.component.css'
+  imports: [FooterComponent],
+  templateUrl: './register.component.html',
+  styleUrl: './register.component.css'
 })
-export class LoginComponent {
+export class RegisterComponent {
 
 }
- 
