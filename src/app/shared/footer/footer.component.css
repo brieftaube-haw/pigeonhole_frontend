@@ -14,3 +14,14 @@ footer .left,
 footer .right {
   padding: 0 1rem;
 }
+
+.icon-button{
+  background: none;
+  padding: 0;
+  border: 0;
+  cursor: pointer;
+}
+
+.icon-button .icon {
+  width: 28px;
+}
