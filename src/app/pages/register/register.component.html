@@ -1,23 +1,42 @@
 <h1 class="hero-title">ACCOUNT ERSTELLEN</h1>
 
 <div class="login-container">
-  <!-- Login Formular -->
-  <form>
+  <form (ngSubmit)="register()" #registerForm="ngForm">
     <label for="username">BENUTZERNAME:</label>
-    <input type="text" id="username" />
+    <input
+      type="text"
+      id="username"
+      name="benutzerName"
+      [(ngModel)]="benutzerName"
+      required
+    />
 
     <label for="password">KENNWORT:</label>
-    <input type="password" id="password" />
+    <input
+      type="password"
+      id="password"
+      name="password"
+      [(ngModel)]="password"
+      required
+    />
 
-    <label for="username">KENNWORT WIEDERHOLEN:</label>
-    <input type="text" id="password_wiederholen" />
+    <label for="passwordConfirm">KENNWORT WIEDERHOLEN:</label>
+    <input
+      type="password"
+      id="passwordConfirm"
+      name="passwordConfirm"
+      [(ngModel)]="passwordConfirm"
+      required
+    />
 
-    <button type="submit">REGISTRIEREN</button>
-
+    <button type="submit" [disabled]="registerForm.invalid">
+      REGISTRIEREN
+    </button>
   </form>
-  <hr>
-  
-  <shared-google-signin></shared-google-signin>
+
+  <p>{{ feedback }}</p>
+
+  <hr />
 </div>
 
 <app-footer></app-footer>
