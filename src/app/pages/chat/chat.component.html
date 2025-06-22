@@ -1,0 +1,29 @@
+<div class="chat-container">
+  <!-- Sidebar / Contact List -->
+  <aside class="sidebar">
+    <h3>Contacts</h3>
+    <ul>
+      <li *ngFor="let contact of contacts" (click)="selectContact(contact)">
+        {{ contact.name }}
+      </li>
+    </ul>
+  </aside>
+
+  <!-- Chat Area -->
+  <section class="chat-area">
+    <header class="chat-header">
+      <h3 *ngIf="selectedContact">{{ selectedContact.name }}</h3>
+      <button class="profile-button">Profile</button>
+    </header>
+
+    <div class="chat-messages">
+      <div *ngFor="let message of messages" class="message">
+        <strong>{{ message.sender }}:</strong> {{ message.text }}
+      </div>
+    </div>
+
+    <footer class="chat-input">
+      <input type="text" [(ngModel)]="newMessage" (keydown.enter)="sendMessage()" placeholder="Type a message..." />
+    </footer>
+  </section>
+</div>
