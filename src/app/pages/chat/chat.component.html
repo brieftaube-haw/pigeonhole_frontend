@@ -3,10 +3,11 @@
   <aside class="sidebar">
     <h3>Chat</h3>
     <ul>
-      <li *ngFor="let contact of contacts" (click)="selectContact(contact)">
-        {{ contact.name }}
+      <li *ngFor="let benutzer of benutzer" (click)="selectContact(benutzer)">
+        {{ benutzer.name }}
       </li>
     </ul>
+
   </aside>
 
   <!-- Chat Area -->

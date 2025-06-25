@@ -17,3 +17,17 @@ export interface chatPayload {
   nachrichten: Nachricht[];
   teilnehmer: Benutzer[];
 }
+
+@Injectable({
+  providedIn: 'root'
+})
+export class ChatService {
+
+  private readonly apiUrl = 'http://localhost:8080/api/chat';
+
+  constructor(private http: HttpClient) {}
+
+  createChat(payload: ChatPayload): Observable<any> {
+    return this.http.post<any>(this.apiUrl, payload);
+  }
+}

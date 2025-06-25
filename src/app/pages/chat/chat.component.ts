@@ -10,7 +10,7 @@ import { CommonModule } from '@angular/common';
   styleUrls: ['./chat.component.css']
 })
 export class ChatComponent {
-  contacts = [
+  benutzer = [
     { name: 'Lukas' },
     { name: 'Elias' }
   ];
