@@ -12,8 +12,12 @@
 
   <!-- Chat Area -->
   <main class="chat-area" *ngIf="selectedContact">
-    <header class="chat-header">
+    <header class="chat-header" style="display: flex; justify-content: space-between; align-items: center;">
       <h2>{{ selectedContact.name }}</h2>
+      <button (click)="logout()"
+              style="padding: 6px 12px; background-color: #e74c3c; color: white; border: none; border-radius: 5px; cursor: pointer;">
+        Logout
+      </button>
     </header>
 
     <div class="messages">

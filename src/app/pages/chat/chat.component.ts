@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
 
 @Component({
   standalone: true,
@@ -19,6 +20,8 @@ export class ChatComponent {
   messages: { sender: string; text: string }[] = [];
   newMessage = '';
 
+  constructor(private router: Router) {}
+
   selectContact(contact: any) {
     this.selectedContact = contact;
     this.messages = []; // Reset or fetch chat
@@ -30,5 +33,10 @@ export class ChatComponent {
 
     this.messages.push({ sender: 'me', text: trimmed });
     this.newMessage = '';
+  }
+
+  logout() {
+    localStorage.clear(); // oder spezifisch: localStorage.removeItem('benutzerName');
+    this.router.navigate(['/login']);
   }
 }
