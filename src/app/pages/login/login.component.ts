@@ -42,8 +42,10 @@ export class LoginComponent {
     this.userService.login(payload).subscribe({
       next: (result: string) => {
         if (result !== '') {
+          localStorage.setItem('currentUser', this.benutzerName);
           this.feedback = 'Login erfolgreich!';
           console.log(result + "Login Rückmeldung");
+          console.log(this.benutzerName+ "Willkommen");
           this.router.navigate(['/chat']); // ← Navigate after success
         } else {
           this.feedback = 'Login fehlgeschlagen: Ungültige Antwort.';

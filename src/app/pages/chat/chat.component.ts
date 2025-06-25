@@ -41,7 +41,7 @@ export class ChatComponent {
   }
 
   logout() {
-    localStorage.clear(); // oder spezifisch: localStorage.removeItem('benutzerName');
+    localStorage.removeItem('currentUser');
     this.router.navigate(['/login']);
   }
 
@@ -66,13 +66,57 @@ export class ChatComponent {
   }
 
   confirmCreateChat() {
-    if (!this.andererBenutzerName.trim()) {
-      this.errorMessage = 'Der Chat konnte nicht erstellt werden';
+    const currentUser = localStorage.getItem('currentUser');
+    if (!currentUser) {
+      this.errorMessage = 'Du bist nicht eingeloggt!';
       return;
     }
+
+    if (!this.andererBenutzerName.trim()) {
+      this.errorMessage = 'Bitte gib einen Benutzernamen ein.';
+      return;
+    }
+
+    const payload = {
+      benutzerName: currentUser,
+      teilnehmerName: this.andererBenutzerName.trim()
+    };
+
+    this.chatService.createChat(payload).subscribe({
+      next: chat => {
+        console.log('Chat erstellt:', chat);
+        this.closeModal();
+        this.selectedBenutzer = { benutzerName: this.andererBenutzerName.trim() };
+        this.messages = []; // oder ggf. Nachrichten laden
+      },
+      error: err => {
+        console.error('Fehler beim Chat-Erstellen:', err);
+        this.errorMessage = err.error || 'Fehler beim Erstellen des Chats.';
+      }
+    });
   }
 
-  createChat() {
 
+  createChatWith(contactName: string) {
+    const currentUser = localStorage.getItem('currentUser');
+    if (!currentUser) {
+      console.error('Kein Benutzer eingeloggt.');
+      return;
+    }
+
+    const payload = {
+      benutzerName: currentUser,
+      teilnehmerName: contactName
+    };
+
+    this.chatService.createChat(payload).subscribe({
+      next: chat => {
+        console.log('Chat erfolgreich erstellt:', chat);
+      },
+      error: err => {
+        console.error('Fehler beim Erstellen des Chats:', err);
+      }
+    });
   }
+
 }

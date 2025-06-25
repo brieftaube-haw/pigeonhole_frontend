@@ -28,7 +28,7 @@ export class ChatService {
   constructor(private http: HttpClient) {}
 
   createChat(payload: {benutzerName: string, teilnehmerName: string}): Observable<any> {
-    return this.http.post<any>(this.apiUrl + '/create', payload);
+    return this.http.post(this.apiUrl + '/create', payload);
   }
 
   getBenutzerList(): Observable<Benutzer[]> {
