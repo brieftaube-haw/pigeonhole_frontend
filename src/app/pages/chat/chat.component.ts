@@ -1,32 +1,34 @@
 import { Component } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
 
 @Component({
+  standalone: true,
   selector: 'app-chat',
+  imports: [CommonModule, FormsModule],
   templateUrl: './chat.component.html',
   styleUrls: ['./chat.component.css']
 })
 export class ChatComponent {
   contacts = [
-    { name: 'Alice' },
-    { name: 'Bob' },
-    { name: 'Charlie' }
+    { name: 'Lukas' },
+    { name: 'Elias' }
   ];
 
   selectedContact: any = null;
-
   messages: { sender: string; text: string }[] = [];
-
-  newMessage: string = '';
+  newMessage = '';
 
   selectContact(contact: any) {
     this.selectedContact = contact;
-    this.messages = []; // Load messages for the selected contact
+    this.messages = []; // Reset or fetch chat
   }
 
   sendMessage() {
-    if (this.newMessage.trim()) {
-      this.messages.push({ sender: 'You', text: this.newMessage });
-      this.newMessage = '';
-    }
+    const trimmed = this.newMessage.trim();
+    if (!trimmed) return;
+
+    this.messages.push({ sender: 'me', text: trimmed });
+    this.newMessage = '';
   }
 }

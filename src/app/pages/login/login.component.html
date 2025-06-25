@@ -2,21 +2,34 @@
 
 <div class="login-container">
   <!-- Login Formular -->
-  <form>
-    <label for="username">BENUTZERNAME:</label>
-    <input type="text" id="username" />
+    <form (ngSubmit)="login()" #loginForm="ngForm">
+      <label for="username">BENUTZERNAME:</label>
+      <input
+        type="text"
+        id="username"
+        name="benutzerName"
+        [(ngModel)]="benutzerName"
+        required
+        #benutzerNameInput="ngModel"
+      />
 
-    <label for="password">KENNWORT:</label>
-    <input type="password" id="password" />
+      <label for="password">KENNWORT:</label>
+      <input
+        type="password"
+        id="password"
+        name="password"
+        [(ngModel)]="password"
+        required
+        #passwordInput="ngModel"
+      />
 
-    <button type="submit">ANMELDEN</button>
+      <button type="submit" [disabled]="loginForm.invalid">ANMELDEN</button>
+    </form>
+
     <a href="#">PASSWORT VERGESSEN?</a>
-
     <hr />
 
     <button type="button" [routerLink]="['/register']">ACCOUNT ERSTELLEN</button>
-  </form>
-
   <hr style="margin-top: 20px; margin-bottom: 20px;">
 </div>
 
