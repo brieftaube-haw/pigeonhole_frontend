@@ -9,7 +9,7 @@ export interface Benutzer {
 
 export interface Nachricht {
   nachricht: string;
-  timestamp: Date; // or Date, if you prefer
+  timestamp: Date;
   sender: Benutzer;
 }
 
@@ -27,8 +27,8 @@ export class ChatService {
 
   constructor(private http: HttpClient) {}
 
-  createChat(payload: chatPayload): Observable<any> {
-    return this.http.post<any>(this.apiUrl, payload);
+  createChat(payload: {benutzerName: string, teilnehmerName: string}): Observable<any> {
+    return this.http.post<any>(this.apiUrl + '/create', payload);
   }
 
   getBenutzerList(): Observable<Benutzer[]> {

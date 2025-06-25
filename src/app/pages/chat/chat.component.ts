@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import {Component, NgIterable} from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
@@ -19,12 +19,16 @@ export class ChatComponent {
   newMessage = '';
 
   errorMessage: string = '';
+  benutzer: (NgIterable<unknown> & NgIterable<any>) | undefined | null;
+  currentBenutzer: Benutzer | null = null;
+  showModal = false;
+  andererBenutzerName: string = '';
 
   constructor(private router: Router,
               private chatService: ChatService) {}
 
-  selectBenutzer(benutzer: any) {
-    this.selectedBenutzer = benutzer;
+  selectBenutzer(contact: any) {
+    this.selectedBenutzer = contact;
     this.messages = []; // Reset or fetch chat
   }
 
@@ -41,13 +45,31 @@ export class ChatComponent {
     this.router.navigate(['/login']);
   }
 
-  getAllBenutzer(){
+  getAllContacts(){
     this.chatService.getBenutzerList().subscribe({
       next: data => {
         this.benutzerListe = data;
       },
       error: err => this.errorMessage = err
     });
+  }
+
+  openModal(){
+    this.errorMessage = '';
+    this.andererBenutzerName = '';
+    this.showModal = true;
+  }
+
+  closeModal() {
+    this.showModal = false;
+    this.errorMessage = '';
+  }
+
+  confirmCreateChat() {
+    if (!this.andererBenutzerName.trim()) {
+      this.errorMessage = 'Der Chat konnte nicht erstellt werden';
+      return;
+    }
   }
 
   createChat() {

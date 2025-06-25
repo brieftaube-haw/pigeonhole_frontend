@@ -1,11 +1,12 @@
 <div class="chat-wrapper">
   <!-- Contact List -->
   <aside class="sidebar">
-    <button (click)="createChat()"
+    <button (click)="openModal()"
             style="padding: 12px 12px; background-color: #BE91BE; color: white; border: none; border-radius: 5px; cursor: pointer;">
       Create Chat
     </button>
     <h3>Chat</h3>
+    <p>{{ showModal }}</p>
     <ul>
       <li *ngFor="let user of benutzerListe" (click)="selectBenutzer(user)">
         {{ user.benutzerName }}
@@ -20,7 +21,7 @@
   <!-- Chat Area -->
   <main class="chat-area" *ngIf="selectedBenutzer">
     <header class="chat-header" style="display: flex; justify-content: space-between; align-items: center;">
-      <h2>{{ selectedBenutzer.name }}</h2>
+      <h2>{{ selectedBenutzer.benutzerName }}</h2>
 
     </header>
 
@@ -35,4 +36,25 @@
       <button (click)="sendMessage()">Senden</button>
     </footer>
   </main>
+</div>
+
+<!-- Modal -->
+<div class="modal-backdrop" *ngIf="showModal">
+  <div class="modal">
+    <h2>Neuen Chat erstellen</h2>
+
+    <label>Anderer User: </label>
+    <input [(ngModel)]="andererBenutzerName" placeholder="Anderer User" />
+
+    <div class="modal-buttons">
+      <button (click)="confirmCreateChat()">OK</button>
+      <button (click)="closeModal()">Abbrechen</button>
+    </div>
+
+    <p class="error" *ngIf="errorMessage">{{ errorMessage }}</p>
+  </div>
+</div>
+
+<div *ngIf="showModal">
+  <h2>Ich bin ein Modal</h2>
 </div>
