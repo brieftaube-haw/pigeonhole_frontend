@@ -1,23 +1,27 @@
 <div class="chat-wrapper">
   <!-- Contact List -->
   <aside class="sidebar">
+    <button (click)="createChat()"
+            style="padding: 12px 12px; background-color: #BE91BE; color: white; border: none; border-radius: 5px; cursor: pointer;">
+      Create Chat
+    </button>
     <h3>Chat</h3>
     <ul>
-      <li *ngFor="let benutzer of benutzer" (click)="selectContact(benutzer)">
-        {{ benutzer.name }}
+      <li *ngFor="let user of benutzerListe" (click)="selectBenutzer(user)">
+        {{ user.benutzerName }}
       </li>
     </ul>
-
+    <button (click)="logout()"
+            style="padding: 12px 12px; background-color: #e74c3c; color: white; border: none; border-radius: 5px; cursor: pointer; position: absolute; bottom: 20px;">
+      Logout
+    </button>
   </aside>
 
   <!-- Chat Area -->
-  <main class="chat-area" *ngIf="selectedContact">
+  <main class="chat-area" *ngIf="selectedBenutzer">
     <header class="chat-header" style="display: flex; justify-content: space-between; align-items: center;">
-      <h2>{{ selectedContact.name }}</h2>
-      <button (click)="logout()"
-              style="padding: 6px 12px; background-color: #e74c3c; color: white; border: none; border-radius: 5px; cursor: pointer;">
-        Logout
-      </button>
+      <h2>{{ selectedBenutzer.name }}</h2>
+
     </header>
 
     <div class="messages">

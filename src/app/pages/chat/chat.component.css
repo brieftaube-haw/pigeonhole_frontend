@@ -20,6 +20,10 @@
   cursor: pointer;
 }
 
+.sidebar button {
+  width: 200px;
+  font-size: 20px;
+}
 .chat-area {
   flex: 1;
   display: flex;
@@ -66,3 +70,4 @@
 .input-area button {
   padding: 0.5rem 1rem;
 }
+

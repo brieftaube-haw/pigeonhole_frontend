@@ -4,7 +4,7 @@ import { Observable } from 'rxjs';
 
 export interface Benutzer {
   benutzerName: string;
-  // password: string;
+  password: string;
 }
 
 export interface Nachricht {
@@ -27,7 +27,12 @@ export class ChatService {
 
   constructor(private http: HttpClient) {}
 
-  createChat(payload: ChatPayload): Observable<any> {
+  createChat(payload: chatPayload): Observable<any> {
     return this.http.post<any>(this.apiUrl, payload);
   }
+
+  getBenutzerList(): Observable<Benutzer[]> {
+    return this.http.get<Benutzer[]>(this.apiUrl + '/all');
+  }
+
 }

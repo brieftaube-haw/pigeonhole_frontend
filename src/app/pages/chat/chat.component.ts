@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
+import {Benutzer, ChatService} from "../../services/chat/chat.service";
 
 @Component({
   standalone: true,
@@ -11,19 +12,19 @@ import { Router } from '@angular/router';
   styleUrls: ['./chat.component.css']
 })
 export class ChatComponent {
-  benutzer = [
-    { name: 'Lukas' },
-    { name: 'Elias' }
-  ];
+  benutzerListe: Benutzer[] = [];
 
-  selectedContact: any = null;
+  selectedBenutzer: any = null;
   messages: { sender: string; text: string }[] = [];
   newMessage = '';
 
-  constructor(private router: Router) {}
+  errorMessage: string = '';
 
-  selectContact(contact: any) {
-    this.selectedContact = contact;
+  constructor(private router: Router,
+              private chatService: ChatService) {}
+
+  selectBenutzer(benutzer: any) {
+    this.selectedBenutzer = benutzer;
     this.messages = []; // Reset or fetch chat
   }
 
@@ -38,5 +39,18 @@ export class ChatComponent {
   logout() {
     localStorage.clear(); // oder spezifisch: localStorage.removeItem('benutzerName');
     this.router.navigate(['/login']);
+  }
+
+  getAllBenutzer(){
+    this.chatService.getBenutzerList().subscribe({
+      next: data => {
+        this.benutzerListe = data;
+      },
+      error: err => this.errorMessage = err
+    });
+  }
+
+  createChat() {
+
   }
 }
