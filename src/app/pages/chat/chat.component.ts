@@ -60,17 +60,52 @@ export class ChatComponent implements OnInit {
   }
 
 
-  selectBenutzer(contact: any): void {
-    this.selectedBenutzer = contact;
-    this.messages = []; // Reset or load messages from backend
+  selectBenutzer(chat: Chat): void {
+    this.selectedBenutzer = chat;
+
+    const currentUser = localStorage.getItem('currentUser');
+    if (!chat || !chat.id) {
+      console.error('Ungültiger Chat:', chat);
+      return;
+    }
+
+    this.chatService.getMessagesByChatId(chat.id).subscribe({
+      next: messages => {
+        this.messages = messages.map(msg => ({
+          sender: msg.sender.benutzerName === currentUser ? 'me' : msg.sender.benutzerName,
+          text: msg.nachricht
+        }));
+        console.log(messages);
+      },
+      error: err => {
+        console.error('Fehler beim Laden der Nachrichten:', err);
+        this.messages = [];
+      }
+    });
   }
 
   sendMessage(): void {
     const trimmed = this.newMessage.trim();
-    if (!trimmed) return;
+    const currentUser = localStorage.getItem('currentUser');
 
-    this.messages.push({ sender: 'me', text: trimmed });
-    this.newMessage = '';
+    if (!trimmed || !this.selectedBenutzer || !currentUser) return;
+
+    const payload = {
+      chatId: this.selectedBenutzer.id,
+      senderName: currentUser,
+      nachricht: trimmed
+    };
+
+    this.chatService.createNachricht(payload).subscribe({
+      next: (response) => {
+        this.messages.push({ sender: 'me', text: trimmed });
+        this.newMessage = '';
+        this.selectBenutzer(this.selectedBenutzer);
+      },
+      error: (err) => {
+        console.error('Fehler beim Senden der Nachricht:', err);
+      }
+    });
   }
 
   logout(): void {
@@ -124,7 +159,7 @@ export class ChatComponent implements OnInit {
         this.closeModal();
         this.selectedBenutzer = { benutzerName: this.andererBenutzerName.trim() };
         this.messages = [];
-        this.getAllChats(); // ✅ refresh chat list
+        this.getAllChats();
       },
       error: err => {
         console.error('Fehler beim Chat-Erstellen:', err);
@@ -154,5 +189,9 @@ export class ChatComponent implements OnInit {
         console.error('Fehler beim Erstellen des Chats:', err);
       }
     });
+  }
+
+  onChatClick(chat: Chat): void{
+
   }
 }

@@ -43,4 +43,20 @@ export class ChatService {
     const params = new HttpParams().set('benutzerName', benutzerName);
     return this.http.get<ChatPayload[]>(`${this.apiUrl}/all`, { params });
   }
+
+  getMessagesByChatId(chatId: number): Observable<Nachricht[]> {
+    return this.http.get<Nachricht[]>(`${this.apiUrl}/get_msgs`, {
+      params: { chatId: chatId }
+    });
+  }
+
+  createNachricht(payload: {
+    nachricht: string;
+    chatId: number;
+    senderName: string;
+  }): Observable<any> {
+    return this.http.post(`${this.apiUrl.replace('/chat', '/message')}/create_new`, payload);
+  }
+
+
 }
