@@ -6,12 +6,13 @@
       Create Chat
     </button>
     <h3>Chat</h3>
-    <p>{{ showModal }}</p>
+
     <ul>
-      <li *ngFor="let user of benutzerListe" (click)="selectBenutzer(user)">
-        {{ user.benutzerName }}
+      <li *ngFor="let chat of chatListe" (click)="selectBenutzer(chat)">
+        {{ chat.chatName}}
       </li>
     </ul>
+
     <button (click)="logout()"
             style="padding: 12px 12px; background-color: #e74c3c; color: white; border: none; border-radius: 5px; cursor: pointer; position: absolute; bottom: 20px;">
       Logout
@@ -21,7 +22,10 @@
   <!-- Chat Area -->
   <main class="chat-area" *ngIf="selectedBenutzer">
     <header class="chat-header" style="display: flex; justify-content: space-between; align-items: center;">
-      <h2>{{ selectedBenutzer.benutzerName }}</h2>
+      <h2>
+        {{ selectedBenutzer?.benutzerName || getOtherParticipantName(selectedBenutzer) }}
+      </h2>
+
 
     </header>
 
@@ -55,6 +59,3 @@
   </div>
 </div>
 
-<div *ngIf="showModal">
-  <h2>Ich bin ein Modal</h2>
-</div>

@@ -1,8 +1,9 @@
-import {Component, NgIterable} from '@angular/core';
+import { Component, NgIterable, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
-import {Benutzer, ChatService} from "../../services/chat/chat.service";
+import { Benutzer, ChatService } from '../../services/chat/chat.service';
+import { Chat } from '../../models/chat.model'; // adjust the path to your Chat model
 
 @Component({
   standalone: true,
@@ -11,8 +12,9 @@ import {Benutzer, ChatService} from "../../services/chat/chat.service";
   templateUrl: './chat.component.html',
   styleUrls: ['./chat.component.css']
 })
-export class ChatComponent {
+export class ChatComponent implements OnInit {
   benutzerListe: Benutzer[] = [];
+  chatListe: Chat[] = [];
 
   selectedBenutzer: any = null;
   messages: { sender: string; text: string }[] = [];
@@ -24,15 +26,46 @@ export class ChatComponent {
   showModal = false;
   andererBenutzerName: string = '';
 
-  constructor(private router: Router,
-              private chatService: ChatService) {}
+  constructor(
+    private router: Router,
+    private chatService: ChatService
+  ) {}
 
-  selectBenutzer(contact: any) {
-    this.selectedBenutzer = contact;
-    this.messages = []; // Reset or fetch chat
+  ngOnInit(): void {
+    this.getAllChats();
   }
 
-  sendMessage() {
+  getAllChats(): void {
+    const currentUser = localStorage.getItem('currentUser');
+    if (currentUser) {
+      this.chatService.getAllChatsByUser(currentUser).subscribe({
+        next: data => {
+          this.chatListe = data.map(chat => new Chat(chat));
+          console.log('Anzahl der Chats:', this.chatListe.length);
+        },
+        error: err => {
+          console.error('Fehler beim Laden der Chats:', err);
+          this.errorMessage = 'Fehler beim Laden der Chats.';
+        }
+      });
+    }
+  }
+
+  getOtherParticipantName(chat: any): string {
+    const currentUser = localStorage.getItem('currentUser');
+    if (!chat || !chat.teilnehmer || !Array.isArray(chat.teilnehmer)) return 'Unbekannt';
+
+    const other = chat.teilnehmer.find((t: any) => t.benutzerName !== currentUser);
+    return other?.benutzerName || 'Unbekannt';
+  }
+
+
+  selectBenutzer(contact: any): void {
+    this.selectedBenutzer = contact;
+    this.messages = []; // Reset or load messages from backend
+  }
+
+  sendMessage(): void {
     const trimmed = this.newMessage.trim();
     if (!trimmed) return;
 
@@ -40,32 +73,35 @@ export class ChatComponent {
     this.newMessage = '';
   }
 
-  logout() {
+  logout(): void {
     localStorage.removeItem('currentUser');
     this.router.navigate(['/login']);
   }
 
-  getAllContacts(){
+  getAllContacts(): void {
     this.chatService.getBenutzerList().subscribe({
       next: data => {
         this.benutzerListe = data;
       },
-      error: err => this.errorMessage = err
+      error: err => {
+        console.error('Fehler beim Laden der Benutzerliste:', err);
+        this.errorMessage = 'Fehler beim Laden der Benutzerliste.';
+      }
     });
   }
 
-  openModal(){
+  openModal(): void {
     this.errorMessage = '';
     this.andererBenutzerName = '';
     this.showModal = true;
   }
 
-  closeModal() {
+  closeModal(): void {
     this.showModal = false;
     this.errorMessage = '';
   }
 
-  confirmCreateChat() {
+  confirmCreateChat(): void {
     const currentUser = localStorage.getItem('currentUser');
     if (!currentUser) {
       this.errorMessage = 'Du bist nicht eingeloggt!';
@@ -87,7 +123,8 @@ export class ChatComponent {
         console.log('Chat erstellt:', chat);
         this.closeModal();
         this.selectedBenutzer = { benutzerName: this.andererBenutzerName.trim() };
-        this.messages = []; // oder ggf. Nachrichten laden
+        this.messages = [];
+        this.getAllChats(); // ✅ refresh chat list
       },
       error: err => {
         console.error('Fehler beim Chat-Erstellen:', err);
@@ -96,8 +133,7 @@ export class ChatComponent {
     });
   }
 
-
-  createChatWith(contactName: string) {
+  createChatWith(contactName: string): void {
     const currentUser = localStorage.getItem('currentUser');
     if (!currentUser) {
       console.error('Kein Benutzer eingeloggt.');
@@ -112,11 +148,11 @@ export class ChatComponent {
     this.chatService.createChat(payload).subscribe({
       next: chat => {
         console.log('Chat erfolgreich erstellt:', chat);
+        this.getAllChats(); // ✅ refresh after quick-create
       },
       error: err => {
         console.error('Fehler beim Erstellen des Chats:', err);
       }
     });
   }
-
 }
