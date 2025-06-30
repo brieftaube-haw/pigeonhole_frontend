@@ -10,18 +10,15 @@
       Willkommen, <span>{{ currentBenutzer }}</span> 👋
     </div>
 
-    <h3>Chat</h3>
+    <h3>Chats</h3>
 
     <ul>
       <li *ngFor="let chat of chatListe" (click)="selectBenutzer(chat)">
-        {{ chat.chatName}}
+        {{ chat.chatName }}
       </li>
     </ul>
 
-    <button (click)="logout()"
-            style="padding: 12px 12px; background-color: #e74c3c; color: white; border: none; border-radius: 5px; cursor: pointer; position: absolute; bottom: 20px;">
-      Logout
-    </button>
+    <button class="logout-btn" (click)="logout()">Logout</button>
   </aside>
 
   <!-- Chat Area -->
@@ -44,10 +41,24 @@
       </div>
     </header>
 
-
     <div class="messages" #messagesContainer>
-      <div *ngFor="let msg of messages" [class.me]="msg.sender === 'me'">
-        <span>{{ msg.text }}</span>
+      <div *ngFor="let msg of messages"
+           [class.me]="msg.sender === 'me'"
+           class="message-bubble"
+           [class.partner-msg]="msg.sender !== 'me'">
+
+        <!-- Nachrichtentext -->
+        <span class="message-text">{{ msg.text }}</span>
+
+        <!-- Reaktion inline unten links im Bubble -->
+        <span *ngIf="msg.reaction" class="reaction-inline">{{ msg.reaction }}</span>
+
+        <!-- Emoji Reaction Buttons (nur bei Partnernachricht) -->
+        <div class="reaction-picker" *ngIf="msg.sender !== 'me'">
+          <button (click)="reactToMessage(msg, '👍')">👍</button>
+          <button (click)="reactToMessage(msg, '😂')">😂</button>
+          <button (click)="reactToMessage(msg, '❤️')">❤️</button>
+        </div>
       </div>
     </div>
 
@@ -69,9 +80,6 @@
         style="max-width: 300px; margin-top: 10px;">
       </emoji-picker>
     </footer>
-
-
-
   </main>
 </div>
 
@@ -93,8 +101,5 @@
       [message]="errorMessage"
       [type]="'error'">
     </app-alert-box>
-
   </div>
 </div>
-
-

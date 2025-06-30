@@ -5,24 +5,93 @@
 }
 
 .sidebar {
-  width: 200px;
-  background: #eee;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 220px;
+  background: #fff8e1;
   padding: 1rem;
+  border-right: 2px dashed #d7ccc8;
+  box-shadow: 4px 0 8px rgba(0, 0, 0, 0.05);
+  position: relative;
+  font-family: 'Courier New', monospace;
+  background-image: repeating-linear-gradient(
+    to bottom,
+    #fff8e1,
+    #fff8e1 28px,
+    #f9f3e9 28px,
+    #f9f3e9 30px
+  );
+}
+
+.sidebar h3 {
+  margin-top: 1rem;
+  font-size: 1.2rem;
+  color: #4a148c;
+  border-bottom: 1px dashed #d7ccc8;
+  padding-bottom: 0.5rem;
 }
 
 .sidebar ul {
   list-style: none;
   padding: 0;
+  margin-top: 1rem;
 }
 
 .sidebar li {
-  padding: 0.5rem;
+  background-color: #fbe9e7;
+  margin-bottom: 0.6rem;
+  padding: 0.6rem;
+  border: 1px dashed #d7ccc8;
+  border-radius: 10px;
   cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 0.95rem;
+  box-shadow: 1px 2px 4px rgba(0, 0, 0, 0.05);
 }
 
+.sidebar li:hover {
+  background-color: #f8bbd0;
+  color: white;
+  transform: translateX(2px);
+}
+
+.sidebar li:nth-child(odd) {
+  transform: rotate(-1.2deg);
+}
+
+.sidebar li:nth-child(even) {
+  transform: rotate(0.8deg);
+}
+
+.sidebar button.logout-btn {
+  width: 100%;
+  font-size: 1rem;
+  padding: 12px;
+  background-color: #e74c3c;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-top: auto;
+  margin-bottom: 0.5rem;
+}
+
+
 .sidebar button {
-  width: 200px;
-  font-size: 20px;
+  width: 100%;
+  margin-top: 1rem;
+  font-size: 0.95rem;
+  background-color: #d1c4e9;
+  color: #4a148c;
+  border: 1px dashed #b39ddb;
+  box-shadow: 1px 1px 4px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.2s ease;
+}
+
+.sidebar button:hover {
+  background-color: #b39ddb;
+  color: white;
 }
 
 .chat-area {
@@ -76,6 +145,9 @@
 }
 
 .messages {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
   flex: 1;
   padding: 1rem;
   overflow-y: auto;
@@ -90,14 +162,16 @@
 }
 
 .messages div {
+  align-self: flex-start;
   margin-bottom: 0.8rem;
   padding: 0.75rem 1rem;
   border-radius: 12px;
   max-width: 60%;
   background: #fff8e1;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
   border: 1px dashed #d7ccc8;
   font-family: 'Courier New', monospace;
+  word-break: break-word;
 }
 
 .messages div.me {
@@ -144,7 +218,7 @@
   border-radius: 8px;
   font-family: 'Courier New', monospace;
   background-color: #fffaf0;
-  box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
   font-size: 1rem;
 }
 
@@ -161,7 +235,7 @@
   font-weight: bold;
   color: #5d4037;
   cursor: pointer;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   transition: background-color 0.2s;
 }
 
@@ -175,7 +249,7 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0,0,0,0.4);
+  background: rgba(0, 0, 0, 0.4);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -187,7 +261,7 @@
   padding: 2rem;
   border-radius: 16px;
   width: 320px;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
   text-align: center;
   animation: fadeIn 0.3s ease-in-out;
 }
@@ -248,15 +322,33 @@
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: scale(0.95); }
-  to { opacity: 1; transform: scale(1); }
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
 @keyframes fadeInOut {
-  0% { opacity: 0; transform: translateY(-5px); }
-  10% { opacity: 1; transform: translateY(0); }
-  90% { opacity: 1; transform: translateY(0); }
-  100% { opacity: 0; transform: translateY(-5px); }
+  0% {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+  10% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  90% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
 }
 
 .error {
@@ -267,18 +359,20 @@
 .welcome-banner {
   background-color: #f3e5f5;
   color: #4a148c;
-  padding: 1rem;
+  padding: 0.8rem;
   margin: 1rem 0;
   border-radius: 12px;
   text-align: center;
-  font-size: 1rem;
+  font-size: 0.9rem;
   font-weight: 500;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
   transition: all 0.3s ease;
+  line-height: 1.3;
 }
 
 .welcome-banner span {
   font-weight: bold;
+  white-space: nowrap;
 }
 
 .emoji-toggle {
@@ -289,7 +383,7 @@
   height: 40px;
   font-size: 1.2rem;
   cursor: pointer;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -300,4 +394,62 @@
   background-color: #fce4ec;
   transform: scale(1.05);
 }
+
+.message-bubble {
+  position: relative;
+  display: inline-block;
+  padding: 0.75rem 1rem 2.4rem 1rem;
+  margin-bottom: 1.5rem;
+  transition: box-shadow 0.2s;
+}
+
+.message-bubble.partner-msg:hover {
+  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.05);
+}
+
+.reaction-picker {
+  position: absolute;
+  bottom: -55px;
+  left: 0;
+  min-width: 110px;
+  display: none;
+  gap: 6px;
+  background-color: #ffffff;
+  border: 1px solid #ddd;
+  border-radius: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  padding: 4px 8px;
+  z-index: 10;
+  justify-content: center;
+}
+
+
+
+.message-bubble.partner-msg:hover .reaction-picker {
+  display: flex;
+}
+
+.reaction-picker button {
+  background: none;
+  border: none;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: transform 0.2s;
+  padding: 0;
+}
+
+.reaction-picker button:hover {
+  transform: scale(1.3);
+}
+
+.reaction {
+  position: absolute;
+  bottom: 6px;
+  left: 12px;
+  font-size: 1rem;
+  opacity: 0.85;
+  line-height: 1;
+}
+
+
 

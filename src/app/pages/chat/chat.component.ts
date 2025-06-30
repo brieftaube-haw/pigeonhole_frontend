@@ -16,7 +16,11 @@ import {AlertBoxComponent} from "../../shared/alert-box/alert-box/alert-box.comp
 // @ts-ignore
 import 'emoji-picker-element';
 
-
+interface ChatMessage {
+  sender: string;
+  text: string;
+  reaction?: string | null;
+}
 
 @Component({
   standalone: true,
@@ -31,7 +35,7 @@ export class ChatComponent implements OnInit, AfterViewChecked {
   chatListe: Chat[] = [];
 
   selectedBenutzer: any = null;
-  messages: { sender: string; text: string }[] = [];
+  messages: ChatMessage[] = [];
   newMessage = '';
 
   successMessage = '';
@@ -107,7 +111,8 @@ export class ChatComponent implements OnInit, AfterViewChecked {
       next: messages => {
         this.messages = messages.map(msg => ({
           sender: msg.sender.benutzerName === currentUser ? 'me' : msg.sender.benutzerName,
-          text: msg.nachricht
+          text: msg.nachricht,
+          reaction: null
         }));
         this.scrollToBottom();
         console.log(messages);
@@ -268,6 +273,10 @@ export class ChatComponent implements OnInit, AfterViewChecked {
           this.messagesContainer.nativeElement.scrollHeight;
       }
     }, 0);
+  }
+
+  reactToMessage(msg: any, emoji: string): void {
+    msg.reaction = emoji;
   }
 
 }
