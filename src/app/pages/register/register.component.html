@@ -39,7 +39,11 @@
     </button>
   </form>
 
-  <p>{{ feedback }}</p>
+  <app-alert-box
+    *ngIf="showConfirmation"
+    [message]="confirmationMessage"
+    [type]="isSuccess ? 'success' : 'error'">
+  </app-alert-box>
 
   <hr />
 </div>

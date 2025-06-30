@@ -1,18 +1,32 @@
-import { Component, NgIterable, OnInit } from '@angular/core';
+import {
+  Component,
+  NgIterable,
+  OnInit,
+  ElementRef,
+  ViewChild,
+  AfterViewInit,
+  CUSTOM_ELEMENTS_SCHEMA, AfterViewChecked
+} from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { Benutzer, ChatService } from '../../services/chat/chat.service';
-import { Chat } from '../../models/chat.model'; // adjust the path to your Chat model
+import { Chat } from '../../models/chat.model';
+import {AlertBoxComponent} from "../../shared/alert-box/alert-box/alert-box.component"; // adjust the path to your Chat model
+// @ts-ignore
+import 'emoji-picker-element';
+
+
 
 @Component({
   standalone: true,
   selector: 'app-chat',
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, AlertBoxComponent],
   templateUrl: './chat.component.html',
-  styleUrls: ['./chat.component.css']
+  styleUrls: ['./chat.component.css'],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
-export class ChatComponent implements OnInit {
+export class ChatComponent implements OnInit, AfterViewChecked {
   benutzerListe: Benutzer[] = [];
   chatListe: Chat[] = [];
 
@@ -20,11 +34,20 @@ export class ChatComponent implements OnInit {
   messages: { sender: string; text: string }[] = [];
   newMessage = '';
 
+  successMessage = '';
+  showSuccess = false;
+
   errorMessage: string = '';
   benutzer: (NgIterable<unknown> & NgIterable<any>) | undefined | null;
-  currentBenutzer: Benutzer | null = null;
+  currentBenutzer: string | null = null;
   showModal = false;
   andererBenutzerName: string = '';
+  showEmojiPicker = false;
+  emojiListenerAttached = false;
+
+  @ViewChild('emojiPicker', { static: false }) emojiPicker!: ElementRef;
+  @ViewChild('messagesContainer') messagesContainer!: ElementRef;
+
 
   constructor(
     private router: Router,
@@ -32,7 +55,18 @@ export class ChatComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    const currentUser = localStorage.getItem('currentUser');
+    this.currentBenutzer = currentUser;
     this.getAllChats();
+  }
+
+  ngAfterViewChecked() {
+    if (this.emojiPicker && this.emojiPicker.nativeElement && !this.emojiListenerAttached) {
+      this.emojiPicker.nativeElement.addEventListener('emoji-click', (event: any) => {
+        this.addEmoji(event);
+      });
+      this.emojiListenerAttached = true;
+    }
   }
 
   getAllChats(): void {
@@ -75,6 +109,7 @@ export class ChatComponent implements OnInit {
           sender: msg.sender.benutzerName === currentUser ? 'me' : msg.sender.benutzerName,
           text: msg.nachricht
         }));
+        this.scrollToBottom();
         console.log(messages);
       },
       error: err => {
@@ -101,6 +136,7 @@ export class ChatComponent implements OnInit {
         this.messages.push({ sender: 'me', text: trimmed });
         this.newMessage = '';
         this.selectBenutzer(this.selectedBenutzer);
+        this.scrollToBottom();
       },
       error: (err) => {
         console.error('Fehler beim Senden der Nachricht:', err);
@@ -127,6 +163,8 @@ export class ChatComponent implements OnInit {
 
   openModal(): void {
     this.errorMessage = '';
+    this.successMessage = '';
+    this.showSuccess = false;
     this.andererBenutzerName = '';
     this.showModal = true;
   }
@@ -155,18 +193,37 @@ export class ChatComponent implements OnInit {
 
     this.chatService.createChat(payload).subscribe({
       next: chat => {
-        console.log('Chat erstellt:', chat);
+        this.successMessage = `Chat mit ${this.andererBenutzerName} wurde erstellt!`;
+        this.showSuccess = true;
+
+        setTimeout(() => {
+          this.showSuccess = false;
+        }, 3000);
+
         this.closeModal();
-        this.selectedBenutzer = { benutzerName: this.andererBenutzerName.trim() };
-        this.messages = [];
         this.getAllChats();
+
+        // 👇 Hier wird der richtige Chat ausgewählt
+        setTimeout(() => {
+          const neuerChat = this.chatListe.find(c =>
+            c.teilnehmer.some(t => t.benutzerName === this.andererBenutzerName.trim())
+          );
+          if (neuerChat) {
+            this.selectBenutzer(neuerChat);
+          }
+        }, 300);
       },
       error: err => {
         console.error('Fehler beim Chat-Erstellen:', err);
         this.errorMessage = err.error || 'Fehler beim Erstellen des Chats.';
+
+        setTimeout(() => {
+          this.errorMessage = '';
+        }, 3000);
       }
     });
   }
+
 
   createChatWith(contactName: string): void {
     const currentUser = localStorage.getItem('currentUser');
@@ -194,4 +251,23 @@ export class ChatComponent implements OnInit {
   onChatClick(chat: Chat): void{
 
   }
+
+  addEmoji(event: any) {
+    const emoji = event.detail.unicode;
+    this.newMessage += emoji;
+  }
+
+  toggleEmojiPicker() {
+    this.showEmojiPicker = !this.showEmojiPicker;
+  }
+
+  scrollToBottom(): void {
+    setTimeout(() => {
+      if (this.messagesContainer?.nativeElement) {
+        this.messagesContainer.nativeElement.scrollTop =
+          this.messagesContainer.nativeElement.scrollHeight;
+      }
+    }, 0);
+  }
+
 }

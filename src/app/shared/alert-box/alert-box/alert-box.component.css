@@ -1,0 +1,29 @@
+.success-box, .error-box {
+  color: rgba(255, 255, 255, 0.9);
+  padding: 1rem;
+  margin-top: 1rem;
+  margin-bottom: 1.5rem;
+  border-radius: 20px;
+  text-align: center;
+  font-weight: normal;
+  font-size: 0.95rem;
+  z-index: 10;
+  position: relative;
+  box-shadow: 0 0 10px rgba(0,0,0,0.2);
+  animation: fadeInOut 3s ease-in-out;
+}
+
+.success-box {
+  background-color: rgba(76, 175, 80, 0.6);
+}
+
+.error-box {
+  background-color: rgba(244, 67, 54, 0.6);
+}
+
+@keyframes fadeInOut {
+  0% { opacity: 0; transform: translateY(-10px); }
+  10% { opacity: 1; transform: translateY(0); }
+  90% { opacity: 1; transform: translateY(0); }
+  100% { opacity: 0; transform: translateY(-10px); }
+}

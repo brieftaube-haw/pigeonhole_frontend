@@ -83,3 +83,19 @@ a {
   text-decoration: underline;
   font-size: 0.9rem;
 }
+
+.forgot-link {
+  display: block;
+  text-align: center;
+  margin-top: 0.5rem;
+  margin-bottom: 1rem;
+  color: #444;
+  text-decoration: underline;
+  font-size: 0.9rem;
+}
+
+.login-container button[type="button"] {
+  display: block;
+  margin: 1rem auto;
+  width: fit-content;
+}

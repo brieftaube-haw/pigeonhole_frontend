@@ -23,12 +23,17 @@
         #passwordInput="ngModel"
       />
 
-      <button type="submit" [disabled]="loginForm.invalid">ANMELDEN</button>
+      <button type="submit" [disabled]="loginForm.invalid" style="margin-bottom: 1.5rem;">ANMELDEN</button>
+
     </form>
 
-  <p>{{ feedback }}</p>
+  <app-alert-box
+    *ngIf="showConfirmation"
+    [message]="confirmationMessage"
+    [type]="isSuccess ? 'success' : 'error'">
+  </app-alert-box>
 
-    <a href="#">PASSWORT VERGESSEN?</a>
+  <a class="forgot-link" href="#">PASSWORT VERGESSEN?</a>
     <hr />
 
     <button type="button" [routerLink]="['/register']">ACCOUNT ERSTELLEN</button>

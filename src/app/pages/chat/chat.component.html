@@ -5,6 +5,11 @@
             style="padding: 12px 12px; background-color: #BE91BE; color: white; border: none; border-radius: 5px; cursor: pointer;">
       Create Chat
     </button>
+
+    <div class="welcome-banner" *ngIf="currentBenutzer">
+      Willkommen, <span>{{ currentBenutzer }}</span> 👋
+    </div>
+
     <h3>Chat</h3>
 
     <ul>
@@ -21,24 +26,52 @@
 
   <!-- Chat Area -->
   <main class="chat-area" *ngIf="selectedBenutzer">
-    <header class="chat-header" style="display: flex; justify-content: space-between; align-items: center;">
-      <h2>
-        {{ selectedBenutzer?.benutzerName || getOtherParticipantName(selectedBenutzer) }}
-      </h2>
+    <header class="chat-header">
+      <div class="chat-user-info">
+        <div class="avatar">
+          {{ getOtherParticipantName(selectedBenutzer).charAt(0).toUpperCase() }}
+        </div>
+        <div class="username">
+          {{ selectedBenutzer?.benutzerName || getOtherParticipantName(selectedBenutzer) }}
+        </div>
+      </div>
 
-
+      <div class="header-alert" *ngIf="showSuccess">
+        <app-alert-box
+          [message]="successMessage"
+          [type]="'success'">
+        </app-alert-box>
+      </div>
     </header>
 
-    <div class="messages">
+
+    <div class="messages" #messagesContainer>
       <div *ngFor="let msg of messages" [class.me]="msg.sender === 'me'">
         <span>{{ msg.text }}</span>
       </div>
     </div>
 
     <footer class="input-area">
-      <input [(ngModel)]="newMessage" placeholder="Nachricht eingeben..." (keydown.enter)="sendMessage()" />
-      <button (click)="sendMessage()">Senden</button>
+      <!-- Eingabezeile + Emoji Button -->
+      <div class="input-wrapper">
+        <button (click)="toggleEmojiPicker()" class="emoji-toggle">😄</button>
+        <input
+          [(ngModel)]="newMessage"
+          placeholder="Nachricht eingeben..."
+          (keydown.enter)="sendMessage()" />
+        <button (click)="sendMessage()">Senden</button>
+      </div>
+
+      <!-- Emoji Picker -->
+      <emoji-picker
+        #emojiPicker
+        *ngIf="showEmojiPicker"
+        style="max-width: 300px; margin-top: 10px;">
+      </emoji-picker>
     </footer>
+
+
+
   </main>
 </div>
 
@@ -47,15 +80,21 @@
   <div class="modal">
     <h2>Neuen Chat erstellen</h2>
 
-    <label>Anderer User: </label>
-    <input [(ngModel)]="andererBenutzerName" placeholder="Anderer User" />
+    <label for="chat-user">Benutzername</label>
+    <input id="chat-user" [(ngModel)]="andererBenutzerName" placeholder="Anderer Benutzername" />
 
     <div class="modal-buttons">
-      <button (click)="confirmCreateChat()">OK</button>
-      <button (click)="closeModal()">Abbrechen</button>
+      <button class="confirm" (click)="confirmCreateChat()">Erstellen</button>
+      <button class="cancel" (click)="closeModal()">Abbrechen</button>
     </div>
 
-    <p class="error" *ngIf="errorMessage">{{ errorMessage }}</p>
+    <app-alert-box
+      *ngIf="errorMessage"
+      [message]="errorMessage"
+      [type]="'error'">
+    </app-alert-box>
+
   </div>
 </div>
+
 
