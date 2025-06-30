@@ -181,37 +181,55 @@ export class ChatComponent implements OnInit, AfterViewChecked {
 
   confirmCreateChat(): void {
     const currentUser = localStorage.getItem('currentUser');
+    const trimmedName = this.andererBenutzerName.trim();
+
     if (!currentUser) {
       this.errorMessage = 'Du bist nicht eingeloggt!';
       return;
     }
 
-    if (!this.andererBenutzerName.trim()) {
+    if (!trimmedName) {
       this.errorMessage = 'Bitte gib einen Benutzernamen ein.';
+      return;
+    }
+
+    if (trimmedName === currentUser) {
+      this.errorMessage = 'Du kannst keinen Chat mit dir selbst starten.';
+      return;
+    }
+
+    const existingChat = this.chatListe.find(chat =>
+      chat.teilnehmer.some(t => t.benutzerName === trimmedName)
+    );
+
+    if (existingChat) {
+      this.selectBenutzer(existingChat);
+      this.successMessage = `Chat mit ${trimmedName} existiert bereits.`;
+      this.showSuccess = true;
+      this.closeModal();
+
+      setTimeout(() => (this.showSuccess = false), 3000);
       return;
     }
 
     const payload = {
       benutzerName: currentUser,
-      teilnehmerName: this.andererBenutzerName.trim()
+      teilnehmerName: trimmedName
     };
 
     this.chatService.createChat(payload).subscribe({
       next: chat => {
-        this.successMessage = `Chat mit ${this.andererBenutzerName} wurde erstellt!`;
+        this.successMessage = `Chat mit ${trimmedName} wurde erstellt!`;
         this.showSuccess = true;
 
-        setTimeout(() => {
-          this.showSuccess = false;
-        }, 3000);
+        setTimeout(() => (this.showSuccess = false), 3000);
 
         this.closeModal();
         this.getAllChats();
 
-        // 👇 Hier wird der richtige Chat ausgewählt
         setTimeout(() => {
           const neuerChat = this.chatListe.find(c =>
-            c.teilnehmer.some(t => t.benutzerName === this.andererBenutzerName.trim())
+            c.teilnehmer.some(t => t.benutzerName === trimmedName)
           );
           if (neuerChat) {
             this.selectBenutzer(neuerChat);
@@ -222,12 +240,11 @@ export class ChatComponent implements OnInit, AfterViewChecked {
         console.error('Fehler beim Chat-Erstellen:', err);
         this.errorMessage = err.error || 'Fehler beim Erstellen des Chats.';
 
-        setTimeout(() => {
-          this.errorMessage = '';
-        }, 3000);
+        setTimeout(() => (this.errorMessage = ''), 3000);
       }
     });
   }
+
 
 
   createChatWith(contactName: string): void {
