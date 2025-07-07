@@ -1,17 +1,14 @@
 <div class="chat-wrapper">
-  <!-- Contact List -->
+
+  <!-- Sidebar -->
   <aside class="sidebar">
-    <button (click)="openModal()"
-            style="padding: 12px 12px; background-color: #BE91BE; color: white; border: none; border-radius: 5px; cursor: pointer;">
-      Create Chat
-    </button>
+    <button (click)="openModal()" class="create-chat-btn">Chat erstellen</button>
 
     <div class="welcome-banner" *ngIf="currentBenutzer">
       Willkommen, <span>{{ currentBenutzer }}</span> 👋
     </div>
 
     <h3>Chats</h3>
-
     <ul>
       <li *ngFor="let chat of chatListe" (click)="selectBenutzer(chat)">
         {{ chat.chatName }}
@@ -21,37 +18,38 @@
     <button class="logout-btn" (click)="logout()">Logout</button>
   </aside>
 
-  <!-- Chat Area -->
+  <!-- Chat-Bereich -->
   <main class="chat-area" *ngIf="selectedBenutzer">
+
     <header class="chat-header">
       <div class="chat-user-info">
         <div class="avatar">
           {{ getOtherParticipantName(selectedBenutzer).charAt(0).toUpperCase() }}
         </div>
         <div class="username">
-          {{ selectedBenutzer?.benutzerName || getOtherParticipantName(selectedBenutzer) }}
+          {{ getOtherParticipantName(selectedBenutzer) }}
         </div>
       </div>
-
       <div class="header-alert" *ngIf="showSuccess">
-        <app-alert-box
-          [message]="successMessage"
-          [type]="'success'">
-        </app-alert-box>
+        <app-alert-box [message]="successMessage" [type]="'success'"></app-alert-box>
       </div>
     </header>
 
+    <!-- Letzte empfangene Nachricht -->
+    <div class="last-message-hint" *ngIf="letzteNachrichtVomAnderen">
+      Letzte empfangene Nachricht: "{{ letzteNachrichtVomAnderen }}"
+    </div>
+
+    <!-- Nachrichten -->
     <div class="messages" #messagesContainer>
       <div *ngFor="let msg of messages"
            [class.me]="msg.sender === 'me'"
            [class.partner-msg]="msg.sender !== 'me'"
            class="message-bubble">
 
-        <!-- Nachricht + Reaktion -->
         <div class="message-text">{{ msg.text }}</div>
         <div *ngIf="msg.reaction" class="reaction-inline">{{ msg.reaction }}</div>
 
-        <!-- Emoji Reaction Buttons (nur bei Partnernachricht) -->
         <div class="reaction-picker" *ngIf="msg.sender !== 'me'">
           <button (click)="reactToMessage(msg, '👍')">👍</button>
           <button (click)="reactToMessage(msg, '😂')">😂</button>
@@ -61,13 +59,13 @@
       </div>
     </div>
 
+    <!-- Eingabefeld -->
     <footer class="input-area">
       <div class="input-wrapper">
         <button (click)="toggleEmojiPicker()" class="emoji-toggle">😄</button>
-        <input
-          [(ngModel)]="newMessage"
-          placeholder="Nachricht eingeben..."
-          (keydown.enter)="sendMessage()" />
+        <input [(ngModel)]="newMessage"
+               placeholder="Nachricht eingeben..."
+               (keydown.enter)="sendMessage()" />
         <button (click)="sendMessage()">Senden</button>
       </div>
 
@@ -80,23 +78,24 @@
   </main>
 </div>
 
-<!-- Modal -->
+<!-- Modal zur Chaterstellung -->
 <div class="modal-backdrop" *ngIf="showModal">
   <div class="modal">
     <h2>✨ Neuen Chat erstellen</h2>
 
     <label for="chat-user">Benutzername</label>
-    <input id="chat-user" [(ngModel)]="andererBenutzerName" placeholder="Anderer Benutzername" />
+    <input id="chat-user"
+           [(ngModel)]="andererBenutzerName"
+           placeholder="Anderer Benutzername" />
 
     <div class="modal-buttons">
       <button class="confirm" (click)="confirmCreateChat()">Erstellen</button>
       <button class="cancel" (click)="closeModal()">Abbrechen</button>
     </div>
 
-    <app-alert-box
-      *ngIf="errorMessage"
-      [message]="errorMessage"
-      [type]="'error'">
+    <app-alert-box *ngIf="errorMessage"
+                   [message]="errorMessage"
+                   [type]="'error'">
     </app-alert-box>
   </div>
 </div>
