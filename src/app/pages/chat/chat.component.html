@@ -12,8 +12,12 @@
 
     <h3>Chats</h3>
     <ul>
-      <li *ngFor="let chat of chatListe" (click)="selectBenutzer(chat)">
-        {{ chat.chatName }}
+      <li
+        *ngFor="let chat of chatListe"
+        (click)="selectBenutzer(chat)"
+        [ngClass]="{ 'has-new-msg': newMessageChatIds.has(chat.id ?? -1) }"
+      >
+        {{ chat.chatName || getOtherParticipantName(chat) }}
       </li>
     </ul>
 

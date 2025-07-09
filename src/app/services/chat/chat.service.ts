@@ -26,6 +26,15 @@ export interface CreateChatPayload {
   teilnehmerName: string;
 }
 
+export interface UpdateChatsFormular {
+  chatIds: number[];
+  lastNachrichtIds: number[];
+}
+
+export type ChatUpdateResponse = {
+  [chatId: number]: Nachricht[];
+};
+
 // ------------------  Service ------------------
 
 @Injectable({
@@ -50,8 +59,9 @@ export class ChatService {
   }
 
   getAllChatsByUser(benutzerName: string): Observable<ChatPayload[]> {
-    const params = new HttpParams().set('benutzerName', benutzerName);
-    return this.http.get<ChatPayload[]>(`${this.chatUrl}/all`, { params });
+    return this.http.post<ChatPayload[]>(`${this.chatUrl}/all`, benutzerName, {
+      headers: { 'Content-Type': 'application/json' }
+    });
   }
 
   getMessagesByChatId(chatId: number): Observable<Nachricht[]> {
@@ -59,6 +69,9 @@ export class ChatService {
       params: { chatId: chatId }
     });
   }
+
+  updateAllChats(updateForm: UpdateChatsFormular): Observable<ChatUpdateResponse> {
+    return this.http.post<ChatUpdateResponse>(`${this.chatUrl}/update_chats`, updateForm);  }
 
   // ------------------  Nachrichten-Funktionen ------------------
 
@@ -76,8 +89,7 @@ export class ChatService {
       .set('chatId', chatId.toString())
       .set('lastMessageId', lastMessageId.toString());
 
-    return this.http.get<Nachricht[]>(`${this.messageUrl}`, { params });
-  }
+    return this.http.get<Nachricht[]>(`${this.chatUrl}/get_new_msgs_by_chat`, { params });  }
 
   //  Hilfsmethode zur ID-Ermittlung (für Polling)
   getLastMessageId(nachrichten: Nachricht[]): number {
