@@ -18,8 +18,10 @@ export interface LoginPayload {
 })
 export class UserService {
 
-  private registerUrl = 'http://localhost:8080/api/user/register';
-  private loginUrl = 'http://localhost:8080/api/user/login';
+// CORRECTED: Use relative paths that match your Nginx proxy setup
+  // Nginx is configured to proxy '/api/' requests to your backend
+  private registerUrl = '/api/user/register'; // Changed from 'http://localhost:8080/api/user/register'
+  private loginUrl = '/api/user/login';
 
   constructor(private http: HttpClient) {}
 
