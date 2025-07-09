@@ -2,7 +2,9 @@
 
   <!-- Sidebar -->
   <aside class="sidebar">
-    <button (click)="openModal()" class="create-chat-btn">Chat erstellen</button>
+    <button (click)="openModal()"
+            style="padding: 12px 12px; background-color: #BE91BE; color: white; border: none; border-radius: 5px; cursor: pointer;"
+    >Chat erstellen</button>
 
     <div class="welcome-banner" *ngIf="currentBenutzer">
       Willkommen, <span>{{ currentBenutzer }}</span> 👋
