@@ -41,11 +41,6 @@
       </div>
     </header>
 
-    <!-- Letzte empfangene Nachricht -->
-    <div class="last-message-hint" *ngIf="letzteNachrichtVomAnderen">
-      Letzte empfangene Nachricht: "{{ letzteNachrichtVomAnderen }}"
-    </div>
-
     <!-- Nachrichten -->
     <div class="messages" #messagesContainer>
       <div *ngFor="let msg of messages"
