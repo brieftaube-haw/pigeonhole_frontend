@@ -100,9 +100,10 @@ export class ChatComponent implements OnInit, AfterViewChecked, OnDestroy {
   }
 
   // ==============================
-  // Chat laden
+  // Chat Laden ohne Restart
   // ==============================
-  getAllChats(): void {
+
+  private loadAllChatsWithoutRestart(): void {
     if (!this.currentBenutzer) return;
 
     this.chatService.getAllChatsByUser(this.currentBenutzer).subscribe({
@@ -116,14 +117,19 @@ export class ChatComponent implements OnInit, AfterViewChecked, OnDestroy {
             this.chatLastMessageIds.set(chat.id, lastId);
           }
         });
-
-        // 🌍 Globales Polling starten
-        this.startGlobalPolling();
       },
       error: () => {
         this.errorMessage = 'Fehler beim Laden der Chats.';
       }
     });
+  }
+
+  // ==============================
+  // Chat laden
+  // ==============================
+  getAllChats(): void {
+    this.loadAllChatsWithoutRestart();
+    this.startGlobalPolling(); // Nur einmalig aufrufen!
   }
 
 
@@ -247,6 +253,8 @@ export class ChatComponent implements OnInit, AfterViewChecked, OnDestroy {
     if (this.pollingIntervalIdGlobal) return;
 
     this.pollingIntervalIdGlobal = setInterval(() => {
+      this.loadAllChatsWithoutRestart(); // neu laden
+
       const chatIds = this.chatListe.map(chat => chat.id!).filter(id => id != null);
       const lastIds = chatIds.map(id => this.chatLastMessageIds.get(id) ?? 0);
 
@@ -275,8 +283,9 @@ export class ChatComponent implements OnInit, AfterViewChecked, OnDestroy {
           console.error('Polling-Fehler', err);
         }
       });
-    }, 5000); // alle 5 Sekunden
+    }, 5000);
   }
+
 
   // ==============================
   // Logout
