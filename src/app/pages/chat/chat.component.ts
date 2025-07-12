@@ -22,6 +22,8 @@ interface ChatMessage {
   reaction?: string | null;
 }
 
+
+
 @Component({
   standalone: true,
   selector: 'app-chat',
@@ -34,7 +36,9 @@ export class ChatComponent implements OnInit, AfterViewChecked, OnDestroy {
   // ==============================
   // Chat & Benutzer
   // ==============================
-  benutzerListe: Benutzer[] = [];
+  chatLastMessageIds: Map<number, number> = new Map();
+  newMessageChatIds: Set<number> = new Set();
+  pollingIntervalIdGlobal: any = null;
   chatListe: Chat[] = [];
   selectedBenutzer: Chat | null = null;
   currentBenutzer: string | null = null;
@@ -96,14 +100,23 @@ export class ChatComponent implements OnInit, AfterViewChecked, OnDestroy {
   }
 
   // ==============================
-  // Chat laden
+  // Chat Laden ohne Restart
   // ==============================
-  getAllChats(): void {
+
+  private loadAllChatsWithoutRestart(): void {
     if (!this.currentBenutzer) return;
 
     this.chatService.getAllChatsByUser(this.currentBenutzer).subscribe({
       next: data => {
         this.chatListe = data.map(chat => new Chat(chat));
+
+        // Letzte Nachricht pro Chat merken
+        this.chatListe.forEach(chat => {
+          const lastId = this.chatService.getLastMessageId(chat.nachrichten);
+          if (chat.id != null) {
+            this.chatLastMessageIds.set(chat.id, lastId);
+          }
+        });
       },
       error: () => {
         this.errorMessage = 'Fehler beim Laden der Chats.';
@@ -111,15 +124,28 @@ export class ChatComponent implements OnInit, AfterViewChecked, OnDestroy {
     });
   }
 
-  getOtherParticipantName(chat: Chat): string {
-    const other = chat.teilnehmer.find(t => t.benutzerName !== this.currentBenutzer);
-    return other?.benutzerName || 'Unbekannt';
+  // ==============================
+  // Chat laden
+  // ==============================
+  getAllChats(): void {
+    this.loadAllChatsWithoutRestart();
+    this.startGlobalPolling(); // Nur einmalig aufrufen!
   }
+
+
+  getOtherParticipantName(chat: Chat): string {
+    return chat.teilnehmer.find(t => t.benutzerName !== this.currentBenutzer)?.benutzerName || 'Unbekannt';
+  }
+
 
   // ==============================
   // Chat auswählen & Nachrichten laden + Polling starten
   // ==============================
   selectBenutzer(chat: Chat): void {
+
+    if (chat.id != null) {
+      this.newMessageChatIds.delete(chat.id);
+    }
     this.selectedBenutzer = chat;
     this.letzteNachrichtVomAnderen = null;
 
@@ -188,24 +214,31 @@ export class ChatComponent implements OnInit, AfterViewChecked, OnDestroy {
       this.chatService.pollNewMessages(chatId, this.lastMessageId).subscribe({
         next: neueNachrichten => {
           neueNachrichten.forEach(msg => {
-            const sender = msg.sender.benutzerName === this.currentBenutzer ? 'me' : msg.sender.benutzerName;
-            this.messages.push({
-              sender,
-              text: msg.nachricht,
-              reaction: null
-            });
+            const senderName = msg.sender.benutzerName;
+            const sender = senderName === this.currentBenutzer ? 'me' : senderName;
+
+            // 💡 Nur hinzufügen, wenn nicht schon vorhanden
+            const alreadyExists = this.messages.some(
+              m => m.text === msg.nachricht && m.sender === sender
+            );
+
+            if (!alreadyExists) {
+              this.messages.push({
+                sender,
+                text: msg.nachricht,
+                reaction: null
+              });
+            }
+
             this.lastMessageId = Math.max(this.lastMessageId, msg.id ?? 0);
           });
 
           if (neueNachrichten.length > 0) {
             this.scrollToBottom();
           }
-        },
-        error: () => {
-          // Fehler beim Polling ignorieren
         }
       });
-    }, 3000); // alle 3 Sekunden
+    }, 2000); // alle 2 Sekunden
   }
 
 
@@ -215,6 +248,44 @@ export class ChatComponent implements OnInit, AfterViewChecked, OnDestroy {
       this.pollingIntervalId = null;
     }
   }
+
+  startGlobalPolling(): void {
+    if (this.pollingIntervalIdGlobal) return;
+
+    this.pollingIntervalIdGlobal = setInterval(() => {
+      this.loadAllChatsWithoutRestart(); // neu laden
+
+      const chatIds = this.chatListe.map(chat => chat.id!).filter(id => id != null);
+      const lastIds = chatIds.map(id => this.chatLastMessageIds.get(id) ?? 0);
+
+      const updateForm = {
+        chatIds,
+        lastNachrichtIds: lastIds
+      };
+
+      this.chatService.updateAllChats(updateForm).subscribe({
+        next: response => {
+          this.newMessageChatIds.clear();
+
+          for (const idStr in response) {
+            const id = Number(idStr);
+            const newMsgs = response[idStr];
+
+            if (newMsgs.length > 0) {
+              this.newMessageChatIds.add(id);
+
+              const lastId = Math.max(...newMsgs.map(m => m.id ?? 0));
+              this.chatLastMessageIds.set(id, lastId);
+            }
+          }
+        },
+        error: err => {
+          console.error('Polling-Fehler', err);
+        }
+      });
+    }, 5000);
+  }
+
 
   // ==============================
   // Logout

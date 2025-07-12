@@ -353,3 +353,15 @@
   background-color: #ccc;
   color: black;
 }
+
+li {
+  cursor: pointer;
+  padding: 8px;
+  border-bottom: 1px solid #ddd;
+}
+
+li.has-new-msg {
+  background-color: #fff9c4; /* light yellow */
+  font-weight: bold;
+}
+
