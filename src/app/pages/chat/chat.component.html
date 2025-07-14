@@ -50,13 +50,6 @@
 
         <div class="message-text">{{ msg.text }}</div>
         <div *ngIf="msg.reaction" class="reaction-inline">{{ msg.reaction }}</div>
-
-        <div class="reaction-picker" *ngIf="msg.sender !== 'me'">
-          <button (click)="reactToMessage(msg, '👍')">👍</button>
-          <button (click)="reactToMessage(msg, '😂')">😂</button>
-          <button (click)="reactToMessage(msg, '❤️')">❤️</button>
-          <button (click)="reactToMessage(msg, '💩')">💩</button>
-        </div>
       </div>
     </div>
 
