@@ -64,11 +64,9 @@
         <button (click)="sendMessage()">Senden</button>
       </div>
 
-      <emoji-picker
-        #emojiPicker
-        *ngIf="showEmojiPicker"
-        style="max-width: 300px; margin-top: 10px;">
-      </emoji-picker>
+      <div class="emoji-popup" *ngIf="showEmojiPicker">
+        <emoji-picker #emojiPicker></emoji-picker>
+      </div>
     </footer>
   </main>
 </div>
