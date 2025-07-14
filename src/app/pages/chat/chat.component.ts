@@ -4,13 +4,12 @@ import {
   OnDestroy,
   ElementRef,
   ViewChild,
-  AfterViewChecked,
   CUSTOM_ELEMENTS_SCHEMA
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
-import { Benutzer, ChatService, Nachricht } from '../../services/chat/chat.service';
+import { ChatService, Nachricht } from '../../services/chat/chat.service';
 import { Chat } from '../../models/chat.model';
 import { AlertBoxComponent } from '../../shared/alert-box/alert-box/alert-box.component';
 // @ts-ignore
