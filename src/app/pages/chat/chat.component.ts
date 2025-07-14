@@ -266,7 +266,6 @@ export class ChatComponent implements OnInit, AfterViewChecked, OnDestroy {
 
       this.chatService.updateAllChats(updateForm).subscribe({
         next: response => {
-          this.newMessageChatIds.clear();
 
           for (const idStr in response) {
             const id = Number(idStr);
