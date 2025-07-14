@@ -271,10 +271,14 @@ export class ChatComponent implements OnInit, AfterViewChecked, OnDestroy {
             const id = Number(idStr);
             const newMsgs = response[idStr];
 
-            if (newMsgs.length > 0) {
+            const fremdeNachrichten = newMsgs.filter(
+              msg => msg.sender.benutzerName !== this.currentBenutzer
+            );
+
+            if (fremdeNachrichten.length > 0) {
               this.newMessageChatIds.add(id);
 
-              const lastId = Math.max(...newMsgs.map(m => m.id ?? 0));
+              const lastId = Math.max(...fremdeNachrichten.map(m => m.id ?? 0));
               this.chatLastMessageIds.set(id, lastId);
             }
           }
@@ -380,13 +384,6 @@ export class ChatComponent implements OnInit, AfterViewChecked, OnDestroy {
           this.messagesContainer.nativeElement.scrollHeight;
       }
     }, 0);
-  }
-
-  // ==============================
-  // Emoji-Reaktion
-  // ==============================
-  reactToMessage(msg: ChatMessage, emoji: string): void {
-    msg.reaction = emoji;
   }
 
   // ==============================
