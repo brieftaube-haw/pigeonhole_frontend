@@ -4,13 +4,12 @@ import {
   OnDestroy,
   ElementRef,
   ViewChild,
-  AfterViewChecked,
   CUSTOM_ELEMENTS_SCHEMA
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
-import { Benutzer, ChatService, Nachricht } from '../../services/chat/chat.service';
+import { ChatService, Nachricht } from '../../services/chat/chat.service';
 import { Chat } from '../../models/chat.model';
 import { AlertBoxComponent } from '../../shared/alert-box/alert-box/alert-box.component';
 // @ts-ignore
@@ -32,7 +31,7 @@ interface ChatMessage {
   styleUrls: ['./chat.component.css'],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
-export class ChatComponent implements OnInit, AfterViewChecked, OnDestroy {
+export class ChatComponent implements OnInit, OnDestroy {
   // ==============================
   // Chat & Benutzer
   // ==============================
@@ -42,6 +41,7 @@ export class ChatComponent implements OnInit, AfterViewChecked, OnDestroy {
   chatListe: Chat[] = [];
   selectedBenutzer: Chat | null = null;
   currentBenutzer: string | null = null;
+  private clickOutsideListener?: (event: MouseEvent) => void;
 
   // ==============================
   // Nachrichten
@@ -83,21 +83,16 @@ export class ChatComponent implements OnInit, AfterViewChecked, OnDestroy {
     this.getAllChats();
   }
 
-  ngAfterViewChecked(): void {
-    if (this.emojiPicker?.nativeElement && !this.emojiListenerAttached) {
-      this.emojiPicker.nativeElement.addEventListener('emoji-click', (event: any) => {
-        this.addEmoji(event);
-      });
-      this.emojiListenerAttached = true;
-    }
-  }
-
   // ==============================
   // Aufräumen bei Destroy
   // ==============================
   ngOnDestroy(): void {
     this.stopPolling();
+    if (this.clickOutsideListener) {
+      document.removeEventListener('click', this.clickOutsideListener);
+    }
   }
+
 
   // ==============================
   // Chat Laden ohne Restart
@@ -346,6 +341,13 @@ export class ChatComponent implements OnInit, AfterViewChecked, OnDestroy {
         this.closeModal();
         this.getAllChats();
 
+// Automatisch nach 3s ausblenden
+        setTimeout(() => {
+          this.showSuccess = false;
+          this.successMessage = '';
+        }, 3000);
+
+// Chat öffnen, wenn er da ist
         setTimeout(() => {
           const neuerChat = this.chatListe.find(c =>
             c.teilnehmer.some(t => t.benutzerName === trimmedName)
@@ -354,6 +356,7 @@ export class ChatComponent implements OnInit, AfterViewChecked, OnDestroy {
             this.selectBenutzer(neuerChat);
           }
         }, 300);
+
       },
       error: () => {
         this.errorMessage = 'Fehler beim Erstellen des Chats.';
@@ -372,7 +375,46 @@ export class ChatComponent implements OnInit, AfterViewChecked, OnDestroy {
 
   toggleEmojiPicker(): void {
     this.showEmojiPicker = !this.showEmojiPicker;
+
+    // Öffnen → Listener setzen
+    if (this.showEmojiPicker) {
+
+      // kurzer Timeout, damit das Picker-Element sicher im DOM ist
+      setTimeout(() => {
+        if (this.emojiPicker?.nativeElement) {
+          // Emoji-Click Listener
+          this.emojiPicker.nativeElement.addEventListener('emoji-click', (e: any) => {
+            this.addEmoji(e);
+          });
+        }
+      }, 0);
+
+      setTimeout(() => {
+        this.clickOutsideListener = (event: MouseEvent) => {
+          const popup = document.querySelector('.emoji-popup');
+          if (popup && !popup.contains(event.target as Node)) {
+            this.closeEmojiPicker();
+          }
+        };
+        document.addEventListener('click', this.clickOutsideListener);
+      }, 0);
+    }
+
+    // Schließen → Listener entfernen
+    else {
+      this.closeEmojiPicker();
+    }
   }
+
+  private closeEmojiPicker(): void {
+    this.showEmojiPicker = false;
+
+    if (this.clickOutsideListener) {
+      document.removeEventListener('click', this.clickOutsideListener);
+      this.clickOutsideListener = undefined;
+    }
+  }
+
 
   // ==============================
   // Scroll nach unten

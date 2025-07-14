@@ -216,6 +216,7 @@
   padding: 1rem;
   background: #fdfcf7;
   border-top: 1px solid #ccc;
+  position: relative;
 }
 
 .input-wrapper {
@@ -254,6 +255,32 @@
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.emoji-popup {
+  position: absolute;
+  bottom: 70px;
+  left: 60px;
+  width: 280px;
+  height: 320px;
+  background: white;
+  border: 1px dashed #d7ccc8;
+  border-radius: 12px;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+  overflow: hidden;
+  box-sizing: border-box;
+  z-index: 999;
+}
+
+emoji-picker {
+  display: block;
+  width: 100% !important;
+  height: 100% !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+  box-sizing: border-box;
 }
 
 /* Welcome */
