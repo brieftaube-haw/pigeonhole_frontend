@@ -13,7 +13,7 @@ export interface Nachricht {
   providedIn: 'root'
 })
 export class NachrichtService {
-  private BaseUrl: String = 'http://localhost:8080/api';
+  private BaseUrl: String = '/api';
 
   constructor(private http: HttpClient) {}
 

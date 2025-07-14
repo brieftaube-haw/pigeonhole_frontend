@@ -42,7 +42,7 @@ export type ChatUpdateResponse = {
 })
 export class ChatService {
   //  Zentrale API-URLs
-  private readonly baseUrl = 'http://localhost:8080/api';
+  private readonly baseUrl = '/api';
   private readonly chatUrl = `${this.baseUrl}/chat`;
   private readonly messageUrl = `${this.baseUrl}/message`;
 
