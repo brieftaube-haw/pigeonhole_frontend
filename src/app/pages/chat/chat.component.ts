@@ -142,10 +142,6 @@ export class ChatComponent implements OnInit, AfterViewChecked, OnDestroy {
   // Chat auswählen & Nachrichten laden + Polling starten
   // ==============================
   selectBenutzer(chat: Chat): void {
-
-    if (chat.id != null) {
-      this.newMessageChatIds.delete(chat.id);
-    }
     this.selectedBenutzer = chat;
     this.letzteNachrichtVomAnderen = null;
 
@@ -166,9 +162,14 @@ export class ChatComponent implements OnInit, AfterViewChecked, OnDestroy {
         this.letzteNachrichtVomAnderen = letzte?.nachricht || null;
 
         this.lastMessageId = this.chatService.getLastMessageId(messages);
+
+        // 💡 Jetzt erst entfernen!
+        if (chat.id != null) {
+          this.newMessageChatIds.delete(chat.id);
+        }
+
         this.stopPolling();
         this.startPolling();
-
         this.scrollToBottom();
       },
       error: () => {
