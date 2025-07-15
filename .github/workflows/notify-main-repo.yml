@@ -15,5 +15,5 @@ jobs:
           curl -X POST \
             -H "Accept: application/vnd.github.v3+json" \
             -H "Authorization: token ${{ secrets.MAIN_REPO_TOKEN }}" \
-            https://api.github.com/brieftaube-haw/brieftaube/dispatches \
+            https://api.github.com/repos/brieftaube-haw/brieftaube/dispatches \
             -d '{"event_type": "trigger-submodule-deploy"}'
