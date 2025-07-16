@@ -21,8 +21,6 @@ interface ChatMessage {
   reaction?: string | null;
 }
 
-
-
 @Component({
   standalone: true,
   selector: 'app-chat',
@@ -31,6 +29,7 @@ interface ChatMessage {
   styleUrls: ['./chat.component.css'],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
+
 export class ChatComponent implements OnInit, OnDestroy {
   // ==============================
   // Chat & Benutzer
@@ -131,7 +130,6 @@ export class ChatComponent implements OnInit, OnDestroy {
   getOtherParticipantName(chat: Chat): string {
     return chat.teilnehmer.find(t => t.benutzerName !== this.currentBenutzer)?.benutzerName || 'Unbekannt';
   }
-
 
   // ==============================
   // Chat auswählen & Nachrichten laden + Polling starten
@@ -285,7 +283,6 @@ export class ChatComponent implements OnInit, OnDestroy {
     }, 5000);
   }
 
-
   // ==============================
   // Logout
   // ==============================
@@ -414,7 +411,6 @@ export class ChatComponent implements OnInit, OnDestroy {
       this.clickOutsideListener = undefined;
     }
   }
-
 
   // ==============================
   // Scroll nach unten
