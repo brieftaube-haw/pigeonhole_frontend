@@ -46,6 +46,7 @@ export class ChatService {
   private readonly chatUrl = `${this.baseUrl}/chat`;
   private readonly messageUrl = `${this.baseUrl}/message`;
 
+
   constructor(private http: HttpClient) {}
 
   // ------------------  Chat-Funktionen ------------------
